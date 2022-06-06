@@ -1,5 +1,5 @@
 git base界面
-#clone the project
+# clone the project
 git clone https://github.com/lazySir/supermall-back.git
 
 # enter the project directory
