@@ -41,7 +41,7 @@
         <template slot-scope="{ row, $index }">
           <el-button
             type="warning"
-            @click="updateTradeMark"
+            @click="updateTradeMark(row)"
             icon="el-icon-edit"
             size="mini"
             >修改</el-button
@@ -78,7 +78,7 @@
     ：visible.sync:控制对话框显示与隐藏用的
      -->
 
-    <el-dialog title="添加品牌" :visible.sync="dialogFormVisible">
+    <el-dialog :title="tradeForm.id? '修改品牌':'添加品牌' " :visible.sync="dialogFormVisible">
       <!-- form表单  model属性：这个属性的作用是把表单的数据收集起来-->
       <el-form style="width: 80%" :model="tradeForm">
         <el-form-item label="品牌名称" label-width="100px">
@@ -112,7 +112,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addOrUpdateTrademark">确 定</el-button>
+        <el-button type="primary" @click="addOrUpdateTrademark">确 定</el-button
+        >
       </div>
     </el-dialog>
   </div>
@@ -145,7 +146,8 @@ export default {
   },
   methods: {
     //获取品牌列表的数据
-    async getPageList() {
+    async getPageList(pager = 1) {
+      this.page=pager;
       //解构出参数
       const { page, limit } = this;
       //初始化了两个参数 page limit  因为这个接口需要当前页数和显示条数
@@ -158,8 +160,7 @@ export default {
     //点击切换页数
     handleCurrentChange(pager) {
       //修改参数page
-      this.page = pager;
-      this.getPageList();
+      this.getPageList(pager);
     },
     //当分页器每一页需要展示的条数的个数发生变化时会触发
     handleSizeChange(limit) {
@@ -169,13 +170,16 @@ export default {
     //点击显示添加品牌对话框
     showDialog() {
       //清除数组
-      this.tradeForm = { tmName: "",logoUrl:'' };
+      this.tradeForm = { tmName: "", logoUrl: "" };
       //显示对话框
       this.dialogFormVisible = true;
     },
     //修改某一个品牌
-    updateTradeMark() {
+    updateTradeMark(row) {
+      //对话框显示
       this.dialogFormVisible = true;
+      //row：当前用户选择的信息
+      this.tradeForm={...row}  //这里为什么要这么弄是因为浅拷贝 不让tradeForm直接对数据库进行修改
     },
     //图片上传成功执行一次
     handleAvatarSuccess(res, file) {
@@ -197,21 +201,23 @@ export default {
       return isJPG && isLt2M;
     },
     //上传或者更新品牌信息
-   async addOrUpdateTrademark(){
+    async addOrUpdateTrademark() {
       //隐藏对话框
-      this.dialogFormVisible=false;
+      this.dialogFormVisible = false;
       //发请求（添加品牌|修改品牌）
-    let res = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tradeForm)
-    if(res.code==200){
-      //弹出信息：添加品牌成功、修改品牌成功
-      this.$message({
-        message:this.tradeForm.id?'修改品牌成功':'添加品牌成功',
-        type:"success"
-      })
-      //添加或者修改品牌成功以后  重新获取品牌列表
-      this.getPageList();
-    }
-    }
+      let res = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tradeForm);
+      if (res.code == 200) {
+        //弹出信息：添加品牌成功、修改品牌成功
+        this.$message({
+          message: this.tradeForm.id ? "修改品牌成功" : "添加品牌成功",
+          type: "success",
+        });
+        //添加或者修改品牌成功以后  重新获取品牌列表
+        //如果是添加品牌：停留在最后一页，
+        //如果是更新品牌，留在当前页
+        this.getPageList(this.tradeForm.id?this.page:Math.ceil(this.total/this.limit));
+      }
+    },
   },
 
   mounted() {
