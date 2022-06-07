@@ -12,6 +12,6 @@ cd supermall-back
 npm install
 
 
-开发环境： vscode  
+开发环境： vscode  vue2.0  elementUI
 用的模板：https://github.com/PanJiaChen/vue-admin-template
 
