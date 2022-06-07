@@ -79,22 +79,30 @@
      -->
 
     <el-dialog title="添加品牌" :visible.sync="dialogFormVisible">
-      <!-- form表单 -->
-      <el-form style="width: 80%" :model="form">
+      <!-- form表单  model属性：这个属性的作用是把表单的数据收集起来-->
+      <el-form style="width: 80%" :model="tradeForm">
         <el-form-item label="品牌名称" label-width="100px">
-          <el-input autocomplete="off"></el-input>
+          <el-input v-model="tradeForm.tmName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="品牌LOGO" label-width="100px">
           <!-- 上传头像 -->
-
+          <!-- 这里收集数据，不能使用v-model，因为不是表单元素 
+        action：设置图片上传的地址 
+        :on-success:可以监测到图片上传成功，当图片上传成功，会执行一次
+        ：before-upload：当图片上传之前，会执行一次
+        -->
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="/dev-api/admin/product/fileUpload"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img
+              v-if="tradeForm.logoUrl"
+              :src="tradeForm.logoUrl"
+              class="avatar"
+            />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             <div slot="tip" class="el-upload__tip">
               只能上传jpg/png文件，且不超过500kb
@@ -104,9 +112,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="addOrUpdateTrademark">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -129,6 +135,12 @@ export default {
       dialogFormVisible: false,
       //上传图片的url
       imageUrl: "",
+      //收集品牌信息
+      tradeForm: {
+        //品牌名字
+        tmName: "", //不能乱取要和后端一样
+        logoUrl: "",
+      },
     };
   },
   methods: {
@@ -154,14 +166,52 @@ export default {
       this.limit = limit;
       this.getPageList();
     },
-    //点击添加品牌对话框
+    //点击显示添加品牌对话框
     showDialog() {
+      //清除数组
+      this.tradeForm = { tmName: "",logoUrl:'' };
+      //显示对话框
       this.dialogFormVisible = true;
     },
     //修改某一个品牌
     updateTradeMark() {
       this.dialogFormVisible = true;
     },
+    //图片上传成功执行一次
+    handleAvatarSuccess(res, file) {
+      //res 是服务器返回的信息
+      //file：上传成功之后服务器返回给前端的数据
+      this.tradeForm.logoUrl = URL.createObjectURL(file.raw);
+    },
+    //图片上传之前执行一次
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
+    //上传或者更新品牌信息
+   async addOrUpdateTrademark(){
+      //隐藏对话框
+      this.dialogFormVisible=false;
+      //发请求（添加品牌|修改品牌）
+    let res = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tradeForm)
+    if(res.code==200){
+      //弹出信息：添加品牌成功、修改品牌成功
+      this.$message({
+        message:this.tradeForm.id?'修改品牌成功':'添加品牌成功',
+        type:"success"
+      })
+      //添加或者修改品牌成功以后  重新获取品牌列表
+      this.getPageList();
+    }
+    }
   },
 
   mounted() {
