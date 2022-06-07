@@ -76,15 +76,26 @@
 
     <!-- 对话框
     ：visible.sync:控制对话框显示与隐藏用的
+    Form 组件提供了表单验证的功能，
+    只需要通过 rules 属性传入约定的验证规则，
+    并将 Form-Item 的 prop 属性设置为需校验的字段名即可。
      -->
 
-    <el-dialog :title="tradeForm.id? '修改品牌':'添加品牌' " :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="tradeForm.id ? '修改品牌' : '添加品牌'"
+      :visible.sync="dialogFormVisible"
+    >
       <!-- form表单  model属性：这个属性的作用是把表单的数据收集起来-->
-      <el-form style="width: 80%" :model="tradeForm">
-        <el-form-item label="品牌名称" label-width="100px">
+      <el-form
+        :rules="rules"
+        ref="ruleForm"
+        style="width: 80%"
+        :model="tradeForm"
+      >
+        <el-form-item prop="tmName" label="品牌名称" label-width="100px">
           <el-input v-model="tradeForm.tmName" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="品牌LOGO" label-width="100px">
+        <el-form-item prop="logoUrl" label="品牌LOGO" label-width="100px">
           <!-- 上传头像 -->
           <!-- 这里收集数据，不能使用v-model，因为不是表单元素 
         action：设置图片上传的地址 
@@ -112,7 +123,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addOrUpdateTrademark">确 定</el-button
+        <el-button type="primary" @click="addOrUpdateTrademark"
+          >确 定</el-button
         >
       </div>
     </el-dialog>
@@ -142,12 +154,26 @@ export default {
         tmName: "", //不能乱取要和后端一样
         logoUrl: "",
       },
+      //表单验证的规则
+      rules: {
+        tmName: [
+          //required 是否为必须  跟前面的小星星有关
+          { required: true, message: "请输入品牌名称", trigger: "blur" }, //blur 当一个元素失去焦点的时候 blur 事件被触发
+          {
+            min: 2,
+            max: 10,
+            message: "长度在 2 到 10 个字符",
+            trigger: "change",
+          }, //trigger:用户行为
+        ],
+        logoUrl: [{ required: true, message: "请选择品牌LOGO" }],
+      },
     };
   },
   methods: {
     //获取品牌列表的数据
     async getPageList(pager = 1) {
-      this.page=pager;
+      this.page = pager;
       //解构出参数
       const { page, limit } = this;
       //初始化了两个参数 page limit  因为这个接口需要当前页数和显示条数
@@ -179,7 +205,7 @@ export default {
       //对话框显示
       this.dialogFormVisible = true;
       //row：当前用户选择的信息
-      this.tradeForm={...row}  //这里为什么要这么弄是因为浅拷贝 不让tradeForm直接对数据库进行修改
+      this.tradeForm = { ...row }; //这里为什么要这么弄是因为浅拷贝 不让tradeForm直接对数据库进行修改
     },
     //图片上传成功执行一次
     handleAvatarSuccess(res, file) {
@@ -201,22 +227,35 @@ export default {
       return isJPG && isLt2M;
     },
     //上传或者更新品牌信息
-    async addOrUpdateTrademark() {
-      //隐藏对话框
-      this.dialogFormVisible = false;
-      //发请求（添加品牌|修改品牌）
-      let res = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tradeForm);
-      if (res.code == 200) {
-        //弹出信息：添加品牌成功、修改品牌成功
-        this.$message({
-          message: this.tradeForm.id ? "修改品牌成功" : "添加品牌成功",
-          type: "success",
-        });
-        //添加或者修改品牌成功以后  重新获取品牌列表
-        //如果是添加品牌：停留在最后一页，
-        //如果是更新品牌，留在当前页
-        this.getPageList(this.tradeForm.id?this.page:Math.ceil(this.total/this.limit));
-      }
+    addOrUpdateTrademark() {
+      //当全部验证的规则通过之后在去执行操作
+      this.$refs.ruleForm.validate(async (valid) => {
+        //如果全部字段符合条件
+        if (valid) {
+          //隐藏对话框
+          this.dialogFormVisible = false;
+          //发请求（添加品牌|修改品牌）
+          let res = await this.$API.trademark.reqAddOrUpdateTradeMark(
+            this.tradeForm
+          );
+          if (res.code == 200) {
+            //弹出信息：添加品牌成功、修改品牌成功
+            this.$message({
+              message: this.tradeForm.id ? "修改品牌成功" : "添加品牌成功",
+              type: "success",
+            });
+            //添加或者修改品牌成功以后  重新获取品牌列表
+            //如果是添加品牌：停留在最后一页，
+            //如果是更新品牌，留在当前页
+            this.getPageList(
+              this.tradeForm.id ? this.page : Math.ceil(this.total / this.limit)
+            );
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
   },
 
