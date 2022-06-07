@@ -4,9 +4,9 @@
     <el-button type="primary" @click="showDialog" icon="el-icon-plus"
       >添加</el-button
     >
-    <!-- 表格组件 
+    <!-- 表格组件     -->
 
-    el-table : 一个表格  
+    <!-- el-table : 一个表格  
     border属性 代表有表格有边框
     data:要展示的数据  要是个数组类型
 
@@ -15,8 +15,8 @@
     width：对应列的宽度
     align：标题的对齐方式
     type:序号 为index
-    prop：对应列内容的字段
-    -->
+    prop：对应列内容的字段 -->
+
     <el-table :data="list" style="width: 100%; margin-top: 20px" border>
       <el-table-column
         prop="prop"
@@ -26,17 +26,14 @@
         align="center"
       >
       </el-table-column>
-
       <el-table-column prop="tmName" label="品牌名字" width="width">
       </el-table-column>
-
       <el-table-column prop="logoUrl" label="品牌LOGO" width="width">
         <!-- 图片得用到作用域插槽 -->
         <template slot-scope="{ row, $index }">
           <img :src="row.logoUrl" alt="" style="height: 100px; width: 100px" />
         </template>
       </el-table-column>
-
       <el-table-column prop="prop" label="操作" width="width">
         <template slot-scope="{ row, $index }">
           <el-button
@@ -46,22 +43,23 @@
             size="mini"
             >修改</el-button
           >
-          <el-button type="primary" icon="el-icon-delete" size="mini"
+          <el-button
+            type="primary"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteTrademark(row)"
             >删除</el-button
           >
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 分页器 
-    current-page:当前第几页，
+    <!-- 分页器     -->
+    <!-- current-page:当前第几页，
     total:数据的总条数，
     page-size：每一页展示的条数
     page-sizes：可以设置每一个展示多少条数据
-    layout:可以调整显示顺序 分页器布局
-    -->
-    <!-- @size-change="handleSizeChange"
-  @current-change="handleCurrentChange" -->
+    layout:可以调整显示顺序 分页器布局 -->
     <el-pagination
       style="margin-top: 20px; text-align: center"
       :total="total"
@@ -74,13 +72,11 @@
     >
     </el-pagination>
 
-    <!-- 对话框
-    ：visible.sync:控制对话框显示与隐藏用的
+    <!-- 对话框     -->
+    <!-- ：visible.sync:控制对话框显示与隐藏用的
     Form 组件提供了表单验证的功能，
     只需要通过 rules 属性传入约定的验证规则，
-    并将 Form-Item 的 prop 属性设置为需校验的字段名即可。
-     -->
-
+    并将 Form-Item 的 prop 属性设置为需校验的字段名即可。 -->
     <el-dialog
       :title="tradeForm.id ? '修改品牌' : '添加品牌'"
       :visible.sync="dialogFormVisible"
@@ -245,10 +241,10 @@ export default {
               type: "success",
             });
             //添加或者修改品牌成功以后  重新获取品牌列表
-            //如果是添加品牌：停留在最后一页，
+            //如果是添加品牌：停留在最后一页，  如果刚好满了则页数会+1 否则停留在此页面
             //如果是更新品牌，留在当前页
             this.getPageList(
-              this.tradeForm.id ? this.page : Math.ceil(this.total / this.limit)
+              this.tradeForm.id ? this.page : this.list.length==this.limit? Math.ceil(this.total / this.limit)+1: Math.ceil(this.total / this.limit)
             );
           }
         } else {
@@ -256,6 +252,36 @@ export default {
           return false;
         }
       });
+    },
+    //删除商品信息
+    deleteTrademark(row) {
+      //弹窗
+
+      this.$confirm(`您确定删除${row.tmName}吗？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          //当用户点击确定按钮的时候会触发
+          //向服务器发请求
+          let res = await this.$API.trademark.reqDeleteTradeMark(row.id);
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            //再次获取品牌列表   
+            //如果list为0 则返回的是page-1，
+            this.getPageList(this.list.length>1?this.page:this.page-1);
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
   },
 

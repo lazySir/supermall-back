@@ -34,3 +34,11 @@ export const reqTradeMarkList = (page, limit) =>
       })
     }
   }
+
+  //删除品牌的接口
+  // /admin/product/baseTrademark/remove/{id} delete
+
+  export const reqDeleteTradeMark = (id)=>request({
+    url:`/admin/product/baseTrademark/remove/${id}`,
+    method:'delete'
+  })
