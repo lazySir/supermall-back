@@ -47,9 +47,9 @@
       </div>
       <!-- 添加属性|修改属性 -->
       <div v-show="!isShowTable">
-        <el-form ref="form" :inline="true" label-width="80px">
+        <el-form ref="form" :model='attrInfo' :inline="true" label-width="80px">
           <el-form-item label="属性名">
-            <el-input placeholder="请输入属性名"></el-input>
+            <el-input v-model='attrInfo.attrName' placeholder="请输入属性名"></el-input>
           </el-form-item>
         </el-form>
         <el-button type="primary" icon="el-icon-plus">添加属性</el-button>
@@ -85,6 +85,13 @@ export default {
       attrList: [],
       //控制table的显示与隐藏的
       isShowTable: false,
+      //收集新增属性|修改属性 使用的
+      attrInfo:{
+        attrName:"", //属性名
+        attrValueList:[],  //属性值    因为属性值可以多个 因此用数组 每一个属性值都是一个对象 要attrId,valueName
+        categoryId:0,//三级分类的id
+        categoryLevel:3,//服务器也要区分是几级ID
+      } 
     };
   },
   methods: {
