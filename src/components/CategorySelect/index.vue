@@ -79,6 +79,11 @@ export default {
     async handler1() {
       //解构出一级分类的id
       const { category1Id } = this.cForm;
+      //将二级分类和三级分类的value清除
+      this.cForm.category2Id=""
+      this.cForm.category3Id=""
+      this.list2=[]
+      this.list3=[]
       //通过一级分类的id获取二级分类的数据
       let result = await this.$API.attr.reqCategory2List(category1Id);
       if (result.code == 200) {
@@ -88,6 +93,9 @@ export default {
     //当二级分类的select的事件回调（当二级分类发生变化时获取相应的三级分类数据）
     async handler2() {
       const { category2Id } = this.cForm;
+      //将三级分类的value情况
+      this.cForm.category3Id=""
+      this.list3=[]
       //通过二级分类的id获取三级分类的数据
       let result = await this.$API.attr.reqCategory3List(category2Id);
       if (result.code == 200) {
@@ -95,7 +103,12 @@ export default {
       }
     },
     //三级分类的select的事件回调
-    hangler3(){},
+    hangler3(){
+      //解构出三个id
+      const {category1Id,category2Id,category3Id}=this.cForm
+      //获取三级分类的id
+      this.$emit('getCategoryId',{category1Id,category2Id,category3Id})
+    },
   },
 };
 </script>
