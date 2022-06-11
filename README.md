@@ -16,3 +16,6 @@ npm install
 
 用的模板：https://github.com/PanJiaChen/vue-admin-template
 
+# 接口文档地址
+## 登录与权限管理 http://39.98.123.211:8170/swagger-ui.html
+## 商品管理 http://39.98.123.211:8416/swagger-ui.html#/218302169720998318672550921475
