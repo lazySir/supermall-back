@@ -35,6 +35,7 @@ export const constantRoutes = [
     path: "/login",
     component: () => import("@/views/login/index"),
     hidden: true,
+    meta:{title:"supermall后台管理系统"}
   },
 
   {

@@ -1,24 +1,42 @@
 <template>
   <div>
-    <!-- inline 代表行内表单  一行可以放多个表单元素 -->
-    <el-form :inline="true" class="demo-form-inline">
+    <!-- inline 代表行内表单  一行可以放多个表单元素 
+    model:收集的表单所有数据存放位置
+    -->
+    <el-form :inline="true" class="demo-form-inline" :model="cForm">
       <el-form-item label="一级分类">
-        <el-select placeholder="请选择" value="">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select
+          placeholder="请选择"
+          @change="handler1"
+          v-model="cForm.category1Id"
+        >
+          <el-option
+            v-for="(c1, index) in list1"
+            :key="c1.id"
+            :label="c1.name"
+            :value="c1.id"
+          ></el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="二级分类">
-        <el-select placeholder="请选择" value="">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select
+          placeholder="请选择"
+          @change="handler2"
+          v-model="cForm.category2Id"
+        >
+          <el-option
+            v-for="(c2, index) in list2"
+            :key="c2.id"
+            :label="c2.name"
+            :value="c2.id"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select placeholder="请选择" value="">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select placeholder="请选择" @change='hangler3' v-model="cForm.category3Id" >
+          <el-option v-for="(c3,index) in list3" :key="c3.id"  :label="c3.name" :value="c3.id"></el-option>
+
         </el-select>
       </el-form-item>
     </el-form>
@@ -28,6 +46,57 @@
 <script>
 export default {
   name: "CategorySelect",
+  //组件挂载完毕，向服务器发请求，获取响应的一级分类的数据
+  data() {
+    return {
+      //一级分类的数据
+      list1: [],
+      //二级分类的数据
+      list2: [],
+      //三级分类的数据
+      list3: [],
+      //收集一级二级三级分类的id
+      cForm: {
+        category1Id: "",
+        category2Id: "",
+        category3Id: "",
+      },
+    };
+  },
+  mounted() {
+    //获取一级分类数据的方法
+    this.getCateory1List();
+  },
+  methods: {
+    //获取一级分类数据
+    async getCateory1List() {
+      let result = await this.$API.attr.reqCategory1List();
+      if (result.code == 200) {
+        this.list1 = result.data;
+      }
+    },
+    //当一级分类的select的事件回调(当一级分类发生变化时获取相应的二级分类数据)
+    async handler1() {
+      //解构出一级分类的id
+      const { category1Id } = this.cForm;
+      //通过一级分类的id获取二级分类的数据
+      let result = await this.$API.attr.reqCategory2List(category1Id);
+      if (result.code == 200) {
+        this.list2 = result.data;
+      }
+    },
+    //当二级分类的select的事件回调（当二级分类发生变化时获取相应的三级分类数据）
+    async handler2() {
+      const { category2Id } = this.cForm;
+      //通过二级分类的id获取三级分类的数据
+      let result = await this.$API.attr.reqCategory3List(category2Id);
+      if (result.code == 200) {
+        this.list3 = result.data;
+      }
+    },
+    //三级分类的select的事件回调
+    hangler3(){},
+  },
 };
 </script>
 
