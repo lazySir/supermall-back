@@ -44,7 +44,7 @@
             >修改</el-button
           >
           <el-button
-            type="primary"
+            type="danger"
             icon="el-icon-delete"
             size="mini"
             @click="deleteTrademark(row)"
