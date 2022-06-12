@@ -55,8 +55,13 @@
             ></el-input>
           </el-form-item>
         </el-form>
-        <el-button type="primary" @click='addAttrValue' :disabled="!attrInfo.attrName" icon="el-icon-plus">添加属性</el-button>
-        <el-button @click="isShowTable = !isShowTable">取消</el-button>
+        <el-button
+          type="primary"
+          @click="addAttrValue"
+          :disabled="!attrInfo.attrName"
+          icon="el-icon-plus"
+          >添加属性值</el-button
+        >
 
         <el-table
           border
@@ -137,19 +142,29 @@ export default {
         this.attrList = result.data;
       }
     },
+    //添加属性的回调
     addAttr() {
+      //切换页面显示
       this.isShowTable = !this.isShowTable;
+      //清除数据
+      this.attrInfo = {
+        attrName: "", //属性名
+        attrValueList: [], //属性值    因为属性值可以多个 因此用数组 每一个属性值都是一个对象 要attrId,valueName
+        categoryId: this.category3Id, //三级分类的id
+        categoryLevel: 3, //服务器也要区分是几级ID
+      };
     },
+
     //添加属性值的回调
-    addAttrValue(){
+    addAttrValue() {
       this.attrInfo.attrValueList.push({
         //attrId:是你响应的属性的id，目前而言我们是添加属性的操作 还没有相应属性的id，将由服务器返回
-        attrId:undefined,
+        attrId: undefined,
         //相应的属性值的问题
-        valueName:""
-        
-      })
-    }
+        valueName: "",
+      });
+      
+    },
   },
 };
 </script>
