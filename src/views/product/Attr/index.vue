@@ -47,26 +47,45 @@
       </div>
       <!-- 添加属性|修改属性 -->
       <div v-show="!isShowTable">
-        <el-form ref="form" :model='attrInfo' :inline="true" label-width="80px">
+        <el-form ref="form" :model="attrInfo" :inline="true" label-width="80px">
           <el-form-item label="属性名">
-            <el-input v-model='attrInfo.attrName' placeholder="请输入属性名"></el-input>
+            <el-input
+              v-model="attrInfo.attrName"
+              placeholder="请输入属性名"
+            ></el-input>
           </el-form-item>
         </el-form>
-        <el-button type="primary" icon="el-icon-plus">添加属性</el-button>
-        <el-button @click='isShowTable=!isShowTable'>取消</el-button>
+        <el-button type="primary" @click='addAttrValue' :disabled="!attrInfo.attrName" icon="el-icon-plus">添加属性</el-button>
+        <el-button @click="isShowTable = !isShowTable">取消</el-button>
 
-        <el-table border style="width: 100%; margin: 20px 0px">
-          <el-table-column prop="prop" label="序号" width="80">
+        <el-table
+          border
+          style="width: 100%; margin: 20px 0px"
+          :data="attrInfo.attrValueList"
+        >
+          <el-table-column type="index" align="center" label="序号" width="80">
           </el-table-column>
 
           <el-table-column prop="prop" label="属性值名称" width="width">
+            <template slot-scope="{ row, $index }">
+              <el-input
+                v-model="row.valueName"
+                size="mini"
+                placeholder="请输入属性值名称"
+              ></el-input>
+            </template>
           </el-table-column>
 
-          <el-table-column prop="prop" label="操作" width="80">
+          <el-table-column prop="prop" label="操作" width="width">
+            <template slot-scope="{ row, $index }">
+              <el-button type="danger" icon="el-icon-delete" size="mini"
+                >删除</el-button
+              >
+            </template>
           </el-table-column>
         </el-table>
         <el-button type="primary">保存</el-button>
-        <el-button @click='isShowTable=!isShowTable'>取消</el-button>
+        <el-button @click="isShowTable = !isShowTable">取消</el-button>
       </div>
     </el-card>
   </div>
@@ -86,12 +105,12 @@ export default {
       //控制table的显示与隐藏的
       isShowTable: false,
       //收集新增属性|修改属性 使用的
-      attrInfo:{
-        attrName:"", //属性名
-        attrValueList:[],  //属性值    因为属性值可以多个 因此用数组 每一个属性值都是一个对象 要attrId,valueName
-        categoryId:0,//三级分类的id
-        categoryLevel:3,//服务器也要区分是几级ID
-      } 
+      attrInfo: {
+        attrName: "", //属性名
+        attrValueList: [], //属性值    因为属性值可以多个 因此用数组 每一个属性值都是一个对象 要attrId,valueName
+        categoryId: 0, //三级分类的id
+        categoryLevel: 3, //服务器也要区分是几级ID
+      },
     };
   },
   methods: {
@@ -121,6 +140,16 @@ export default {
     addAttr() {
       this.isShowTable = !this.isShowTable;
     },
+    //添加属性值的回调
+    addAttrValue(){
+      this.attrInfo.attrValueList.push({
+        //attrId:是你响应的属性的id，目前而言我们是添加属性的操作 还没有相应属性的id，将由服务器返回
+        attrId:undefined,
+        //相应的属性值的问题
+        valueName:""
+        
+      })
+    }
   },
 };
 </script>
