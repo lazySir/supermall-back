@@ -35,7 +35,7 @@
 
           <el-table-column prop="prop" align="center" label="操作" width="200">
             <template slot-scope="{ row, $index }">
-              <el-button type="warning" icon="el-icon-edit" size="mini"
+              <el-button type="warning" icon="el-icon-edit" size="mini" @click="updateAttr(row)"
                 >修改</el-button
               >
               <el-button type="danger" icon="el-icon-delete" size="mini"
@@ -89,7 +89,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary"保存</el-button>
         <el-button @click="isShowTable = !isShowTable">取消</el-button>
       </div>
     </el-card>
@@ -97,6 +97,8 @@
 </template>
 
 <script>
+//按需引入lodashh当中的深拷贝
+import cloneDeep from 'lodash/cloneDeep'
 export default {
   name: "Attr",
   data() {
@@ -108,7 +110,7 @@ export default {
       //接受平台属性的数据
       attrList: [],
       //控制table的显示与隐藏的
-      isShowTable: false,
+      isShowTable: true,
       //收集新增属性|修改属性 使用的
       attrInfo: {
         attrName: "", //属性名
@@ -162,8 +164,17 @@ export default {
         attrId: undefined,
         //相应的属性值的问题
         valueName: "",
+        flag:true,
       });
       
+    },
+    //修改某一个属性
+    updateAttr(row){
+      //isShowTable变为false
+      this.isShowTable=false;
+      //将选中的属性值赋值给attrInfo
+      //由于数据结构当中存在对象里面套数组，数组里面有对象，因此需要使用深拷贝解决问题
+      this.attrInfo=cloneDeep(row)
     },
   },
 };
