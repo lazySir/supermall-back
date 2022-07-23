@@ -35,7 +35,11 @@
 
           <el-table-column prop="prop" align="center" label="操作" width="200">
             <template slot-scope="{ row, $index }">
-              <el-button type="warning" icon="el-icon-edit" size="mini" @click="updateAttr(row)"
+              <el-button
+                type="warning"
+                icon="el-icon-edit"
+                size="mini"
+                @click="updateAttr(row)"
                 >修改</el-button
               >
               <el-button type="danger" icon="el-icon-delete" size="mini"
@@ -73,11 +77,17 @@
 
           <el-table-column prop="prop" label="属性值名称" width="width">
             <template slot-scope="{ row, $index }">
+              <!-- 这里的结构需要span和input来回切换 -->
               <el-input
+                v-if="row.flag"
+                @blur="tolook(row)"
+                @keyup.native.enter="tolook(row)"
                 v-model="row.valueName"
                 size="mini"
                 placeholder="请输入属性值名称"
               ></el-input>
+
+              <span style="display:block" @click="row.flag = true" v-else>{{ row.valueName }}</span>
             </template>
           </el-table-column>
 
@@ -89,7 +99,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary"保存</el-button>
+        <el-button type="primary">保存</el-button>
         <el-button @click="isShowTable = !isShowTable">取消</el-button>
       </div>
     </el-card>
@@ -98,7 +108,7 @@
 
 <script>
 //按需引入lodashh当中的深拷贝
-import cloneDeep from 'lodash/cloneDeep'
+import cloneDeep from "lodash/cloneDeep";
 export default {
   name: "Attr",
   data() {
@@ -107,6 +117,7 @@ export default {
       category1Id: "",
       category2Id: "",
       category3Id: "",
+
       //接受平台属性的数据
       attrList: [],
       //控制table的显示与隐藏的
@@ -161,21 +172,25 @@ export default {
     addAttrValue() {
       this.attrInfo.attrValueList.push({
         //attrId:是你响应的属性的id，目前而言我们是添加属性的操作 还没有相应属性的id，将由服务器返回
-        attrId: undefined,
+        attrId: this.attrInfo.id, //对于修改某一个属性的时候，可以在已有的属性基础之上新增新的属性值*新增属性值的时候，需要把已有的id传入
         //相应的属性值的问题
         valueName: "",
-        flag:true,
+        //添加属性值的flag  input和span切换
+        flag: true,
       });
-      
     },
     //修改某一个属性
-    updateAttr(row){
+    updateAttr(row) {
       //isShowTable变为false
-      this.isShowTable=false;
+      this.isShowTable = false;
       //将选中的属性值赋值给attrInfo
       //由于数据结构当中存在对象里面套数组，数组里面有对象，因此需要使用深拷贝解决问题
-      this.attrInfo=cloneDeep(row)
+      this.attrInfo = cloneDeep(row);
     },
+    //失去焦点的事件---切换为查看模式 ---展示span
+    tolook(row){
+      row.flag=false
+    }
   },
 };
 </script>
