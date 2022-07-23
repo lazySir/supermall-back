@@ -186,8 +186,16 @@ export default {
       //将选中的属性值赋值给attrInfo
       //由于数据结构当中存在对象里面套数组，数组里面有对象，因此需要使用深拷贝解决问题
       this.attrInfo = cloneDeep(row);
+      //在修改某一个属性的时候，将相应的属性元素添加上flag这个标记
+      this.attrInfo.attrValueList.forEach(item=>{
+        //这样书写也可以给属性值添加flag，但是不是响应式的
+        // item.flag=false
+        //这时候需要用$set添加flag
+        //第一个参数 对象 第二个参数 属性值名称 第三个参数 属性值
+        this.$set(item,'flag',false)
+      })
     },
-    //失去焦点的事件---切换为查看模式 ---展示span
+    //添加属性值的 失去焦点的事件---切换为查看模式 ---展示span
     tolook(row){
       //如果属性值为空那么不能作为新的属性值 需要给用户提示 让他输入一个其他的属性值
       if(row.valueName.trim()==''){
