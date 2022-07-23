@@ -85,18 +85,24 @@
                 v-model="row.valueName"
                 size="mini"
                 placeholder="请输入属性值名称"
-                :ref='$index'
+                :ref="$index"
               ></el-input>
 
-              <span style="display:block" @click="toEdit(row,$index)" v-else>{{ row.valueName }}</span>
+              <span
+                style="display: block"
+                @click="toEdit(row, $index)"
+                v-else
+                >{{ row.valueName }}</span
+              >
             </template>
           </el-table-column>
 
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{ row, $index }">
-              <el-button type="danger" icon="el-icon-delete" size="mini"
-                >删除</el-button
-              >
+              <!-- 气泡确认框 -->
+              <el-popconfirm @onConfirm='deleteAttrValue($index)' :title="`确认删除${row.valueName}吗?`">
+                <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -178,11 +184,11 @@ export default {
         valueName: "",
         //添加属性值的flag  input和span切换
         flag: true,
-      })
+      });
       //实现自动聚焦
-      this.$nextTick(()=>{
-        this.$refs[this.attrInfo.attrValueList.length-1].focus()
-      })
+      this.$nextTick(() => {
+        this.$refs[this.attrInfo.attrValueList.length - 1].focus;
+      });
     },
     //修改某一个属性
     updateAttr(row) {
@@ -192,52 +198,54 @@ export default {
       //由于数据结构当中存在对象里面套数组，数组里面有对象，因此需要使用深拷贝解决问题
       this.attrInfo = cloneDeep(row);
       //在修改某一个属性的时候，将相应的属性元素添加上flag这个标记
-      this.attrInfo.attrValueList.forEach(item=>{
+      this.attrInfo.attrValueList.forEach((item) => {
         //这样书写也可以给属性值添加flag，但是不是响应式的
         // item.flag=false
         //这时候需要用$set添加flag
         //第一个参数 对象 第二个参数 属性值名称 第三个参数 属性值
-        this.$set(item,'flag',false)
-      })
+        this.$set(item, "flag", false);
+      });
     },
     //添加属性值的 失去焦点的事件---切换为查看模式 ---展示span
-    tolook(row){
+    tolook(row) {
       //如果属性值为空那么不能作为新的属性值 需要给用户提示 让他输入一个其他的属性值
-      if(row.valueName.trim()==''){
+      if (row.valueName.trim() == "") {
         this.$message({
-          message:'请输入一个正常的属性值！',
-          type:"warning"
-          })
-        return
+          message: "请输入一个正常的属性值！",
+          type: "warning",
+        });
+        return;
       }
       //新增的属性值不能与已有的属性值重复
-     let isRepat= this.attrInfo.attrValueList.some(item=>{
+      let isRepat = this.attrInfo.attrValueList.some((item) => {
         //需要将row从数组里面将重复的去除
-        if(row!=item){
+        if (row != item) {
           //row是最新新增的属性值 是数组的最后一个属性值 判断的时候需要把已有的数组当中新增的属性值去重
-          return row.valueName==item.valueName
+          return row.valueName == item.valueName;
         }
-      })
-      if(isRepat) return this.$message({message:"输入的属性值重复！",
-      type:'error'})
+      });
+      if (isRepat)
+        return this.$message({ message: "输入的属性值重复！", type: "error" });
       //row 是用户添加的最新的属性值
       //让编辑模式变为查看模式 让input消失显示span
-      row.flag=false
-      this.$message({message:'添加属性值成功！',
-      type:'success'})
-
+      row.flag = false;
+      this.$message({ message: "添加属性值成功！", type: "success" });
     },
     //点击span的回调 变为编辑模式
-    toEdit(row,index){
-      row.flag = true
+    toEdit(row, index) {
+      row.flag = true;
       //获取input节点 实现自动聚焦
       //点击span的时候，切换为input变为编辑模式，但是需要注意，对于浏览器而言，页面重回与重排耗时间的
       //点击span的时候 需要耗时间的，所以不可能一点击span立马获取input
       //这时候九需要nextTick，当节点渲染完，会执行一次
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         //实现聚焦
-        this.$refs[index].focus()
-      })
+        this.$refs[index].focus();
+      });
+    },
+    //删除气泡确认回调
+    deleteAttrValue(index){
+      this.attrInfo.attrValueList.splice(index,1)
     }
   },
 };
