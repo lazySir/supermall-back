@@ -85,9 +85,10 @@
                 v-model="row.valueName"
                 size="mini"
                 placeholder="请输入属性值名称"
+                :ref='$index'
               ></el-input>
 
-              <span style="display:block" @click="row.flag = true" v-else>{{ row.valueName }}</span>
+              <span style="display:block" @click="toEdit(row,$index)" v-else>{{ row.valueName }}</span>
             </template>
           </el-table-column>
 
@@ -177,7 +178,11 @@ export default {
         valueName: "",
         //添加属性值的flag  input和span切换
         flag: true,
-      });
+      })
+      //实现自动聚焦
+      this.$nextTick(()=>{
+        this.$refs[this.attrInfo.attrValueList.length-1].focus()
+      })
     },
     //修改某一个属性
     updateAttr(row) {
@@ -221,6 +226,18 @@ export default {
       this.$message({message:'添加属性值成功！',
       type:'success'})
 
+    },
+    //点击span的回调 变为编辑模式
+    toEdit(row,index){
+      row.flag = true
+      //获取input节点 实现自动聚焦
+      //点击span的时候，切换为input变为编辑模式，但是需要注意，对于浏览器而言，页面重回与重排耗时间的
+      //点击span的时候 需要耗时间的，所以不可能一点击span立马获取input
+      //这时候九需要nextTick，当节点渲染完，会执行一次
+      this.$nextTick(()=>{
+        //实现聚焦
+        this.$refs[index].focus()
+      })
     }
   },
 };
