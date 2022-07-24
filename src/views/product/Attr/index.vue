@@ -100,13 +100,22 @@
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{ row, $index }">
               <!-- 气泡确认框 -->
-              <el-popconfirm @onConfirm='deleteAttrValue($index)' :title="`确认删除${row.valueName}吗?`">
-                <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+              <el-popconfirm
+                @onConfirm="deleteAttrValue($index)"
+                :title="`确认删除${row.valueName}吗?`"
+              >
+                <el-button
+                  slot="reference"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  >删除</el-button
+                >
               </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary">保存</el-button>
+        <el-button @click="addOrUpdateAttr" type="primary">保存</el-button>
         <el-button @click="isShowTable = !isShowTable">取消</el-button>
       </div>
     </el-card>
@@ -244,9 +253,37 @@ export default {
       });
     },
     //删除气泡确认回调
-    deleteAttrValue(index){
-      this.attrInfo.attrValueList.splice(index,1)
-    }
+    deleteAttrValue(index) {
+      //当前删除属性值的操作不需要发请求
+      this.attrInfo.attrValueList.splice(index, 1);
+    },
+    //保存按钮，进行添加属性或者修改属性的操作
+    async addOrUpdateAttr() {
+      //1.先整理参数：如果用户添加了很多属性值，且属性值为空 那么不应该提交给服务器，
+      //提交给服务器的数据当中不应该出现flag字段
+      this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(
+        (item) => {
+          //过滤掉属性值不是空的
+          if (item.valueName != "") {
+            //删除掉flag属性
+            delete item.flag;
+            return true;
+          }
+        }
+      );
+      try {
+        //2.发请求
+        await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo);
+        //3.回到展示数据页面
+        this.isShowTable = true;
+        //4.弹出信息框
+        this.$message({ message: "保存成功！", type: "success" });
+        //5.保存成功之后再次发请求获取平台属性进行展示
+        this.getAttrist();
+      } catch (error) {
+        this.$message({ message: "保存失败！", type: "error" });
+      }
+    },
   },
 };
 </script>
