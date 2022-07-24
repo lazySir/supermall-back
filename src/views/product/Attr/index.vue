@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-card style="margin: 20px 0px">
-      <CategorySelect :show='!isShowTable' @getCategoryId="getCategoryId"> </CategorySelect>
+      <CategorySelect :show="!isShowTable" @getCategoryId="getCategoryId">
+      </CategorySelect>
     </el-card>
 
     <el-card>
@@ -42,9 +43,22 @@
                 @click="updateAttr(row)"
                 >修改</el-button
               >
-              <el-button type="danger" icon="el-icon-delete" size="mini"
-                >删除</el-button
+
+              <!-- 气泡确认框 -->
+              <el-popconfirm
+                @onConfirm="deleteButton($index)"
+                :title="`确认删除${row.attrName}吗?`"
               >
+                <el-button
+                style="margin-left:10px"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  slot="reference"
+                  
+                  >删除</el-button
+                >
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -115,7 +129,12 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button :disabled="attrInfo.attrValueList.length<1" @click="addOrUpdateAttr" type="primary">保存</el-button>
+        <el-button
+          :disabled="attrInfo.attrValueList.length < 1"
+          @click="addOrUpdateAttr"
+          type="primary"
+          >保存</el-button
+        >
         <el-button @click="isShowTable = !isShowTable">取消</el-button>
       </div>
     </el-card>
@@ -284,6 +303,12 @@ export default {
         this.$message({ message: "保存失败！", type: "error" });
       }
     },
+    //
+    deleteButton(index){
+      this.attrList.splice(index,1)
+      this.$message({message:'删除成功！',type:'success'})
+    }
+    
   },
 };
 </script>
