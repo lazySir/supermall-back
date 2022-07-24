@@ -9,6 +9,7 @@
           placeholder="请选择"
           @change="handler1"
           v-model="cForm.category1Id"
+          :disabled="show"
         >
           <el-option
             v-for="(c1, index) in list1"
@@ -24,6 +25,7 @@
           placeholder="请选择"
           @change="handler2"
           v-model="cForm.category2Id"
+          :disabled="show"
         >
           <el-option
             v-for="(c2, index) in list2"
@@ -34,7 +36,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select placeholder="请选择" @change='hangler3' v-model="cForm.category3Id" >
+        <el-select placeholder="请选择" :disabled="show" @change='hangler3' v-model="cForm.category3Id" >
           <el-option v-for="(c3,index) in list3" :key="c3.id"  :label="c3.name" :value="c3.id"></el-option>
 
         </el-select>
@@ -110,6 +112,8 @@ export default {
       this.$emit('getCategoryId',{category1Id,category2Id,category3Id})
     },
   },
+  props:['show']
+
 };
 </script>
 
