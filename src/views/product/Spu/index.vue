@@ -7,7 +7,7 @@
     </el-card>
     <el-card>
       <!-- 底部这里是由三部分切换的 -->
-      <div>
+      <div v-show="scene == 0">
         <!-- 展示spu列表的结构 -->
         <el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
 
@@ -26,30 +26,33 @@
                 icon="el-icon-plus"
                 size="mini"
                 title="添加spu"
+                name="添加"
               ></hint-button>
               <hint-button
                 type="warning"
                 icon="el-icon-edit"
                 size="mini"
                 title="修改spu"
+                name="修改"
               ></hint-button>
               <hint-button
                 type="info"
                 icon="el-icon-info"
                 size="mini"
                 title="查看当前spu全部sku列表"
+                name="详情"
               ></hint-button>
               <hint-button
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
                 title="删除spu"
+                name="删除"
               ></hint-button>
             </template>
           </el-table-column>
         </el-table>
         <!-- //分页器 -->
-<!--  -->
         <el-pagination
           style="text-align: center"
           :current-page="page"
@@ -62,11 +65,17 @@
         >
         </el-pagination>
       </div>
+      <spu-form v-show="scene == 1">添加SPU|修改SPU</spu-form>
+      <sku-form v-show="scene == 2">添加SKU</sku-form>
     </el-card>
   </div>
 </template>
 
 <script>
+//引入子组件
+import SkuForm from "./SkuForm"
+import SpuForm from "./SpuForm"
+
 export default {
   name: "Spu",
   data() {
@@ -80,6 +89,7 @@ export default {
       limit: 3,
       records: [], //存储spu列表的数据
       total: 0,
+      scene: 0, //0代表展示spu列表数据 1 添加SPU|修改SPU 2 添加SKU
     };
   },
   methods: {
@@ -111,17 +121,20 @@ export default {
       }
     },
     //点击分页器的页数：当页数发生改变时
-  handleCurrentChange(page){
-    this.page=page
-    this.getSpuList()
+    handleCurrentChange(page) {
+      this.page = page;
+      this.getSpuList();
+    },
+    //当分页器的pageSize发生改变时的回调
+    handleSizeChange(limit) {
+      this.limit = limit;
+      this.getSpuList();
+    },
   },
-  //当分页器的pageSize发生改变时的回调
-  handleSizeChange(limit){
-    this.limit=limit
-    this.getSpuList()
+  components:{
+    SpuForm,
+    SkuForm
   }
-
-  },
 };
 </script>
 
