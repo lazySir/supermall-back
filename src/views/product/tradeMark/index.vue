@@ -200,6 +200,7 @@ export default {
     updateTradeMark(row) {
       //对话框显示
       this.dialogFormVisible = true;
+      console.log(row)
       //row：当前用户选择的信息
       this.tradeForm = { ...row }; //这里为什么要这么弄是因为浅拷贝 不让tradeForm直接对数据库进行修改
     },

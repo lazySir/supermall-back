@@ -50,12 +50,11 @@
                 :title="`确认删除${row.attrName}吗?`"
               >
                 <el-button
-                style="margin-left:10px"
+                  style="margin-left: 10px"
                   type="danger"
                   icon="el-icon-delete"
                   size="mini"
                   slot="reference"
-                  
                   >删除</el-button
                 >
               </el-popconfirm>
@@ -168,13 +167,21 @@ export default {
   },
   methods: {
     //自定义事件的回调获取分类id
-    getCategoryId(categoryId) {
+    getCategoryId(value) {
+      const{level,categoryId} =value
       //获取三级id
-      this.category1Id = categoryId.category1Id;
-      this.category2Id = categoryId.category2Id;
-      this.category3Id = categoryId.category3Id;
-      //发请求获取attr商品管理
-      this.getAttrist();
+      if (level == 1) {
+        this.category1Id = categoryId;
+        this.category2Id=''
+        this.category3Id=""
+      } else if (level == 2) {
+        this.category2Id = categoryId;
+        this.category3Id=''
+      } else {
+        this.category3Id = categoryId;
+        //发请求获取attr商品管理
+        this.getAttrist();
+      }
     },
     //获取平台属性信息
     async getAttrist() {
@@ -304,11 +311,10 @@ export default {
       }
     },
     //
-    deleteButton(index){
-      this.attrList.splice(index,1)
-      this.$message({message:'删除成功！',type:'success'})
-    }
-    
+    deleteButton(index) {
+      this.attrList.splice(index, 1);
+      this.$message({ message: "删除成功！", type: "success" });
+    },
   },
 };
 </script>

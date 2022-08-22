@@ -36,9 +36,18 @@
         </el-select>
       </el-form-item>
       <el-form-item label="三级分类">
-        <el-select placeholder="请选择" :disabled="show" @change='hangler3' v-model="cForm.category3Id" >
-          <el-option v-for="(c3,index) in list3" :key="c3.id"  :label="c3.name" :value="c3.id"></el-option>
-
+        <el-select
+          placeholder="请选择"
+          :disabled="show"
+          @change="hangler3"
+          v-model="cForm.category3Id"
+        >
+          <el-option
+            v-for="(c3, index) in list3"
+            :key="c3.id"
+            :label="c3.name"
+            :value="c3.id"
+          ></el-option>
         </el-select>
       </el-form-item>
     </el-form>
@@ -82,11 +91,12 @@ export default {
       //解构出一级分类的id
       const { category1Id } = this.cForm;
       //将二级分类和三级分类的value清除
-      this.cForm.category2Id=""
-      this.cForm.category3Id=""
-      this.list2=[]
-      this.list3=[]
+      this.cForm.category2Id = "";
+      this.cForm.category3Id = "";
+      this.list2 = [];
+      this.list3 = [];
       //通过一级分类的id获取二级分类的数据
+      this.$emit("getCategoryId", { categoryId: category1Id, level: 1 });
       let result = await this.$API.attr.reqCategory2List(category1Id);
       if (result.code == 200) {
         this.list2 = result.data;
@@ -96,24 +106,24 @@ export default {
     async handler2() {
       const { category2Id } = this.cForm;
       //将三级分类的value情况
-      this.cForm.category3Id=""
-      this.list3=[]
+      this.cForm.category3Id = "";
+      this.list3 = [];
       //通过二级分类的id获取三级分类的数据
+      this.$emit("getCategoryId", { categoryId: category2Id, level: 2 });
       let result = await this.$API.attr.reqCategory3List(category2Id);
       if (result.code == 200) {
         this.list3 = result.data;
       }
     },
     //三级分类的select的事件回调
-    hangler3(){
+    hangler3() {
       //解构出三个id
-      const {category1Id,category2Id,category3Id}=this.cForm
+      const { category3Id } = this.cForm;
       //获取三级分类的id
-      this.$emit('getCategoryId',{category1Id,category2Id,category3Id})
+      this.$emit("getCategoryId", { categoryId: category3Id, level: 3 });
     },
   },
-  props:['show']
-
+  props: ["show"],
 };
 </script>
 
