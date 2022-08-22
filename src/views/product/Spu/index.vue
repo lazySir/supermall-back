@@ -9,35 +9,57 @@
       <!-- 底部这里是由三部分切换的 -->
       <div>
         <!-- 展示spu列表的结构 -->
-        <el-button type="primary"  icon="el-icon-plus">添加SPU</el-button>
+        <el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
 
-        <el-table style="width: 100%;margin-top:10px" border>
-          <el-table-column type='index' align='center' label="序号" width="80">
+        <el-table :data="records" style="width: 100%; margin-top: 10px" border>
+          <el-table-column type="index" align="center" label="序号" width="80">
           </el-table-column>
-          <el-table-column prop="prop" label="SPU名称" width="width">
+          <el-table-column prop="spuName" label="SPU名称" width="width">
           </el-table-column>
-          <el-table-column prop="prop" label="SPU描述" width="width">
+          <el-table-column prop="description" label="SPU描述" width="width">
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-          <template slot-scope="{row,$index}">
-            <!-- 这里的按钮将来用hintButton替换 -->
-            <el-button type="success" icon='el-icon-plus' size='mini'></el-button>
-            <el-button type="warning" icon='el-cion-edit' size='mini'></el-button>
-            <el-button type="info"    icon='el-cion-info' size='mini'></el-button>
-            <el-button type="danger"  icon='el-cion-delete'size='mini'></el-button>
-          </template>
+            <template slot-scope="{ row, $index }">
+              <!-- 这里的按钮将来用hintButton替换 -->
+              <hint-button
+                type="success"
+                icon="el-icon-plus"
+                size="mini"
+                title="添加spu"
+              ></hint-button>
+              <hint-button
+                type="warning"
+                icon="el-icon-edit"
+                size="mini"
+                title="修改spu"
+              ></hint-button>
+              <hint-button
+                type="info"
+                icon="el-icon-info"
+                size="mini"
+                title="查看当前spu全部sku列表"
+              ></hint-button>
+              <hint-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                title="删除spu"
+              ></hint-button>
+            </template>
           </el-table-column>
         </el-table>
         <!-- //分页器 -->
-                  <!-- @size-change="handleSizeChange"
-          @current-change="handleCurrentChange" -->
+<!--  -->
         <el-pagination
-        style='text-align:center'
-          :current-page="6"
+          style="text-align: center"
+          :current-page="page"
           :page-sizes="[3, 5, 10]"
-          :page-size="pageSize"
+          :page-size="limit"
           layout=" prev, pager, next, jumper,->,sizes,total"
-          :total=23>
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        >
         </el-pagination>
       </div>
     </el-card>
@@ -54,6 +76,10 @@ export default {
       category3Id: "",
       //控制三级联动可操作性
       isShowTable: true,
+      page: 1,
+      limit: 3,
+      records: [], //存储spu列表的数据
+      total: 0,
     };
   },
   methods: {
@@ -75,7 +101,26 @@ export default {
       }
     },
     //获取spu列表数据的方法
-    getSpuList() {},
+    async getSpuList() {
+      const { limit, page, category3Id } = this;
+      //携带三个参数 page limit category3Id
+      let results = await this.$API.spu.reqSpuList(page, limit, category3Id);
+      if (results.code == 200) {
+        this.records = results.data.records;
+        this.total = results.data.total;
+      }
+    },
+    //点击分页器的页数：当页数发生改变时
+  handleCurrentChange(page){
+    this.page=page
+    this.getSpuList()
+  },
+  //当分页器的pageSize发生改变时的回调
+  handleSizeChange(limit){
+    this.limit=limit
+    this.getSpuList()
+  }
+
   },
 };
 </script>
