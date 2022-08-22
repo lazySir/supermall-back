@@ -9,7 +9,7 @@
       <!-- 底部这里是由三部分切换的 -->
       <div v-show="scene == 0">
         <!-- 展示spu列表的结构 -->
-        <el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
+        <el-button @click='addSpu' :disabled="!category3Id" type="primary" icon="el-icon-plus">添加SPU</el-button>
 
         <el-table :data="records" style="width: 100%; margin-top: 10px" border>
           <el-table-column type="index" align="center" label="序号" width="80">
@@ -34,6 +34,7 @@
                 size="mini"
                 title="修改spu"
                 name="修改"
+                @click='updateSpu(row)'
               ></hint-button>
               <hint-button
                 type="info"
@@ -130,6 +131,14 @@ export default {
       this.limit = limit;
       this.getSpuList();
     },
+    //添加spu按钮的回调
+    addSpu(){
+      this.scene=1;
+    },
+    //修改某一个spu按钮的回调
+    updateSpu(){
+      this.scene=1
+    }
   },
   components:{
     SpuForm,
