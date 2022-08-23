@@ -61,7 +61,7 @@
         style="margin-left: 5px"
         icon="el-icon-plus"
         :disabled="!attrIdAndAttrName"
-        @click='addSaleAttr'
+        @click="addSaleAttr"
         >添加销售属性</el-button
       >
       <!-- 展示的是当前spu属于自己的销售属性 -->
@@ -96,14 +96,14 @@
               ref="saveTagInput"
               size="small"
               @keyup.enter.native="handleInputConfirm"
-              @blur="handleInputConfirm"
+              @blur="handleInputConfirm(row)"
             >
             </el-input>
             <el-button
               v-else
               class="button-new-tag"
               size="small"
-              @click="showInput"
+              @click="addSaleAttrValue(row)"
               >添加</el-button
             >
           </template>
@@ -231,14 +231,57 @@ export default {
       }
     },
     //添加新的销售属性
-    addSaleAttr(){
+    addSaleAttr() {
       //已经收集需要添加的销售属性
       //把收集到的销售属性数据进行分割
-      const [baseSaleAttrId,saleAttrName]=this.attrIdAndAttrName.split(':')
-     //向SPU对象的spuSaleAttrList属性里面添加新的销售属性
-     let newSaleAttr={baseSaleAttrId,saleAttrName,spuSaleAttrValueList:[]}
-    this.spu.spuSaleAttrList.push(newSaleAttr)
-    }
+      const [baseSaleAttrId, saleAttrName] = this.attrIdAndAttrName.split(":");
+      //向SPU对象的spuSaleAttrList属性里面添加新的销售属性
+      let newSaleAttr = {
+        baseSaleAttrId,
+        saleAttrName,
+        spuSaleAttrValueList: [],
+      };
+      this.spu.spuSaleAttrList.push(newSaleAttr);
+      //清空销售属性
+      this.attrIdAndAttrName = "";
+    },
+    //添加销售属性值的回调
+    addSaleAttrValue(row) {
+      //点击销售属性值当中添加销售属性的时候，需要有button变为input，通过当前销售属性的inputVisible控制
+      //挂载在销售属性身上的响应式数据inputVisible控制着button和input的切换
+      this.$set(row, "inputVisible", true);
+      //响应式数据inputValue收集新增的销售属性值
+      this.$set(row, "inputValue", "");
+    },
+    //当el-tag里的input失去焦点事件触发
+    handleInputConfirm(row) {
+      //修改inputVisible为false 就是显示input了
+      row.inputVisible = false;
+      //将新增的销售属性值扔进spuSaleAttrValueList     需要有baseSaleAttrId（销售属性的id） saleAttrName(inputValue)
+      //1.解构出想要的数据
+      const { baseSaleAttrId, inputValue } = row;
+      //1.1新增的销售属性值不能为空
+      if (inputValue.trim() == "") {
+        this.$message({ type: "warning", message: "新增的销售属性值不能为空" });
+        return;
+      }
+      //1.2新增的属性值不能重复
+      let result = row.spuSaleAttrValueList.every(
+        (item) => item.saleAttrValueName != inputValue
+      );
+      //重复了返回false 没重复返回true
+      if (!result) {
+        this.$message({ type: "warning", message: "新增的属性值不能重复" });
+        return;
+      }
+      //2.将其转化为需要的格式
+      let newSaleAttrValue = {
+        baseSaleAttrId,
+        saleAttrValueName: inputValue,
+      };
+      //3.新增
+      row.spuSaleAttrValueList.push(newSaleAttrValue);
+    },
   },
   computed: {
     //计算出未选择的销售属性
