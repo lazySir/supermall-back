@@ -66,7 +66,7 @@
         >
         </el-pagination>
       </div>
-      <spu-form v-show="scene == 1">添加SPU|修改SPU</spu-form>
+      <spu-form @changeScene='changeScene' v-show="scene == 1" ref='spu'>添加SPU|修改SPU</spu-form>
       <sku-form v-show="scene == 2">添加SKU</sku-form>
     </el-card>
   </div>
@@ -136,8 +136,15 @@ export default {
       this.scene=1;
     },
     //修改某一个spu按钮的回调
-    updateSpu(){
+    updateSpu(row){
       this.scene=1
+      //获取子组件spuForm  父访问子  去访问子的方法
+      this.$refs.spu.initSpudata(row)
+      
+    },
+    //自定义事件的回调：SpuForm
+    changeScene(scene){
+      this.scene=scene
     }
   },
   components:{

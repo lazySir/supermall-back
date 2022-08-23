@@ -57,7 +57,7 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary">保存</el-button>
-      <el-button>取消</el-button>
+      <el-button @click="$emit('changeScene', 0)">取消</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -70,6 +70,10 @@ export default {
       //照片墙
       dialogImageUrl: "",
       dialogVisible: false,
+      spu: {}, //存储SPU信息属性
+      tradeMarkList: [], //存储的是品牌的信息
+      spuImageList: [], //存储spuImage的数据
+      saleAttrList: [], //销售属性的数据
     };
   },
   methods: {
@@ -79,6 +83,29 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
+    },
+    //初始化SpuForm数据
+    async initSpudata(row) {
+      //获取spu信息的数据
+      let spuResult = await this.$API.spu.reqSpu(row.id);
+      if (spuResult.code == 200) {
+        this.spu = spuResult.data;
+      }
+      //获取品牌的信息
+      let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+      if (tradeMarkResult.code == 200) {
+        this.tradeMarkList = tradeMarkResult.data;
+      }
+      //获取spu图片的数据
+      let spuImageResult = await this.$API.spu.reqSpuImageList(row.id);
+      if (spuImageResult.code == 200) {
+        this.spuImageList = spuImageResult.data;
+      }
+      //获取平台全部的销售属性
+      let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+      if (saleResult.code == 200) {
+        this.saleAttrList = saleResult.data;
+      }
     },
   },
 };
