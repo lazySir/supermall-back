@@ -46,21 +46,22 @@
     </el-form-item>
     <el-form-item label="销售属性">
       <el-select
-        v-model="attrId"
+        v-model="attrIdAndAttrName"
         :placeholder="`还有${unSelectSaleAttr.length}个未选择`"
       >
         <el-option
           v-for="(unselect, index) in unSelectSaleAttr"
           :key="unselect.id"
           :label="unselect.name"
-          :value="unselect.id"
+          :value="`${unselect.id}:${unselect.name}`"
         ></el-option>
       </el-select>
       <el-button
         type="primary"
         style="margin-left: 5px"
         icon="el-icon-plus"
-        :disabled="!attrId"
+        :disabled="!attrIdAndAttrName"
+        @click='addSaleAttr'
         >添加销售属性</el-button
       >
       <!-- 展示的是当前spu属于自己的销售属性 -->
@@ -153,13 +154,13 @@ export default {
         //平台属性与属性值的收集
         spuSaleAttrList: [
           //   {
-          //     baseSaleAttrId: 0,
+          //     baseSaleattrIdAndAttrName: 0,
           //     id: 0,
           //     saleAttrName: "string",
           //     spuId: 0,
           //     spuSaleAttrValueList: [
           //       {
-          //         baseSaleAttrId: 0,
+          //         baseSaleattrIdAndAttrName: 0,
           //         id: 0,
           //         isChecked: "string",
           //         saleAttrName: "string",
@@ -174,7 +175,7 @@ export default {
       tradeMarkList: [], //存储的是品牌的信息
       spuImageList: [], //存储spuImage的数据
       saleAttrList: [], //销售属性的数据
-      attrId: "", //收集未选择的销售属性的id
+      attrIdAndAttrName: "", //收集未选择的销售属性的id
     };
   },
   methods: {
@@ -229,6 +230,15 @@ export default {
         this.saleAttrList = saleResult.data;
       }
     },
+    //添加新的销售属性
+    addSaleAttr(){
+      //已经收集需要添加的销售属性
+      //把收集到的销售属性数据进行分割
+      const [baseSaleAttrId,saleAttrName]=this.attrIdAndAttrName.split(':')
+     //向SPU对象的spuSaleAttrList属性里面添加新的销售属性
+     let newSaleAttr={baseSaleAttrId,saleAttrName,spuSaleAttrValueList:[]}
+    this.spu.spuSaleAttrList.push(newSaleAttr)
+    }
   },
   computed: {
     //计算出未选择的销售属性
