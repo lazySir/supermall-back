@@ -32,3 +32,36 @@ export const reqSpuImageList =(spuId)=>request({
   method:"get"
 })
 
+//添加spu时需要给服务器携带的参数
+// spu: {
+//   category3Id: 0,
+//   tmId: 0,
+//   description: "string",
+//   spuName: "string",
+//   spuImageList: [
+//     {
+//       id: 0,
+//       imgName: "string",
+//       imgUrl: "string",
+//       spuId: 0,
+//     },
+//   ],
+//   spuSaleAttrList: [
+//     {
+//       baseSaleAttrId: 0,
+//       id: 0,
+//       saleAttrName: "string",
+//       spuId: 0,
+//       spuSaleAttrValueList: [
+//         {
+//           baseSaleAttrId: 0,
+//           id: 0,
+//           isChecked: "string",
+//           saleAttrName: "string",
+//           saleAttrValueName: "string",
+//           spuId: 0,
+//         },
+//       ],
+//     },
+//   ],
+// }, 
