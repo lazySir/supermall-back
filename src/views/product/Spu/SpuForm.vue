@@ -81,10 +81,10 @@
           <template slot-scope="{ row, $index }">
             <el-tag
               :key="tag.id"
-              v-for="tag in row.spuSaleAttrValueList"
+              v-for="(tag,index) in row.spuSaleAttrValueList"
               closable
               :disable-transitions="false"
-              @close="handleClose(tag)"
+              @close="handleClose(row,index)"
             >
               {{ tag.saleAttrValueName }}
             </el-tag>
@@ -111,6 +111,7 @@
         <el-table-column prop="prop" label="操作" width="width">
           <template slot-scope="{ row, $index }">
             <el-button type="danger" icon="el-icon-delete" size="mini"
+              @click='spu.spuSaleAttrList.splice($index,1)'
               >删除</el-button
             >
           </template>
@@ -282,6 +283,10 @@ export default {
       //3.新增
       row.spuSaleAttrValueList.push(newSaleAttrValue);
     },
+    //当tag标签里的button点击叉号的时候的回调
+    handleClose(row,index){
+      row.spuSaleAttrValueList.splice(index,1)
+    }
   },
   computed: {
     //计算出未选择的销售属性

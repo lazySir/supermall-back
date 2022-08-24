@@ -2,7 +2,7 @@
   <div>
     <el-card style="margin: 20px 0px">
       <!-- 三级联动已经是全局组件 -->
-      <CategorySelect :show="!isShowTable" @getCategoryId="getCategoryId">
+      <CategorySelect :show="scene!=0" @getCategoryId="getCategoryId">
       </CategorySelect>
     </el-card>
     <el-card>
@@ -84,13 +84,12 @@ export default {
       category1Id: "",
       category2Id: "",
       category3Id: "",
-      //控制三级联动可操作性
-      isShowTable: true,
+
       page: 1,
       limit: 3,
       records: [], //存储spu列表的数据
       total: 0,
-      scene: 0, //0代表展示spu列表数据 1 添加SPU|修改SPU 2 添加SKU
+      scene: 0, //0代表展示spu列表数据 1 添加SPU|修改SPU 2 添加SKU       //控制三级联动可操作性
     };
   },
   methods: {
