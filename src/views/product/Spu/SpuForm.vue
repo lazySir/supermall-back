@@ -81,10 +81,10 @@
           <template slot-scope="{ row, $index }">
             <el-tag
               :key="tag.id"
-              v-for="(tag,index) in row.spuSaleAttrValueList"
+              v-for="(tag, index) in row.spuSaleAttrValueList"
               closable
               :disable-transitions="false"
-              @close="handleClose(row,index)"
+              @close="handleClose(row, index)"
             >
               {{ tag.saleAttrValueName }}
             </el-tag>
@@ -110,8 +110,11 @@
         </el-table-column>
         <el-table-column prop="prop" label="操作" width="width">
           <template slot-scope="{ row, $index }">
-            <el-button type="danger" icon="el-icon-delete" size="mini"
-              @click='spu.spuSaleAttrList.splice($index,1)'
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="spu.spuSaleAttrList.splice($index, 1)"
               >删除</el-button
             >
           </template>
@@ -119,7 +122,7 @@
       </el-table>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
       <el-button @click="$emit('changeScene', 0)">取消</el-button>
     </el-form-item>
   </el-form>
@@ -142,35 +145,10 @@ export default {
         spuName: "",
         //平台的id
         tmId: 0,
-
         //收集spu图片的信息
-        spuImageList: [
-          //   {
-          //     id: 0,
-          //     imgName: "string",
-          //     imgUrl: "string",
-          //     spuId: 0,
-          //   },
-        ],
+        spuImageList: [],
         //平台属性与属性值的收集
-        spuSaleAttrList: [
-          //   {
-          //     baseSaleattrIdAndAttrName: 0,
-          //     id: 0,
-          //     saleAttrName: "string",
-          //     spuId: 0,
-          //     spuSaleAttrValueList: [
-          //       {
-          //         baseSaleattrIdAndAttrName: 0,
-          //         id: 0,
-          //         isChecked: "string",
-          //         saleAttrName: "string",
-          //         saleAttrValueName: "string",
-          //         spuId: 0,
-          //       },
-          //     ],
-          //   },
-        ],
+        spuSaleAttrList: [],
       }, //存储SPU信息属性 ,初始化的时候是个空对象 在修改的时候会返回spu信息（对象），在修改的时候可以利用服务器返回的这个对象提交给服务器
       //但是在添加spu的时候，并没有像服务器发送请求，那么数据收集到哪【spu】，收集的时候
       tradeMarkList: [], //存储的是品牌的信息
@@ -284,9 +262,27 @@ export default {
       row.spuSaleAttrValueList.push(newSaleAttrValue);
     },
     //当tag标签里的button点击叉号的时候的回调
-    handleClose(row,index){
-      row.spuSaleAttrValueList.splice(index,1)
-    }
+    handleClose(row, index) {
+      row.spuSaleAttrValueList.splice(index, 1);
+    },
+    //保存按钮的回调
+    async addOrUpdateSpu() {
+      //整理参数
+      //1.整理照片墙的数据 需要携带imgName和imgUrl两个字段
+      this.spu.spuImageList = this.spuImageList.map((item) => {
+        return {
+          imgName: item.name,
+          imgUrl: (item.response && item.response.data) || item.url,
+        };
+      });
+      //2.发请求
+      let result = await this.$API.spu.reqAddOrUpdateSpu(this.spu);
+      if (result.code == 200) {
+        this.$message({ type: "success", message: "保存成功" });
+        //3.切换到展示列表数据
+        this.$emit('changeScene',0)
+      }
+    },
   },
   computed: {
     //计算出未选择的销售属性

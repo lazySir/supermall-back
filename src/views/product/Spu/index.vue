@@ -141,9 +141,10 @@ export default {
       this.$refs.spu.initSpudata(row)
       
     },
-    //自定义事件的回调：SpuForm
+    //切换场景：自定义事件的回调：SpuForm 
     changeScene(scene){
       this.scene=scene
+      this.getSpuList()
     }
   },
   components:{
