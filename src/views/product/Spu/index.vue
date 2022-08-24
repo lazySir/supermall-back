@@ -2,14 +2,20 @@
   <div>
     <el-card style="margin: 20px 0px">
       <!-- 三级联动已经是全局组件 -->
-      <CategorySelect :show="scene!=0" @getCategoryId="getCategoryId">
+      <CategorySelect :show="scene != 0" @getCategoryId="getCategoryId">
       </CategorySelect>
     </el-card>
     <el-card>
       <!-- 底部这里是由三部分切换的 -->
       <div v-show="scene == 0">
         <!-- 展示spu列表的结构 -->
-        <el-button @click='addSpu' :disabled="!category3Id" type="primary" icon="el-icon-plus">添加SPU</el-button>
+        <el-button
+          @click="addSpu"
+          :disabled="!category3Id"
+          type="primary"
+          icon="el-icon-plus"
+          >添加SPU</el-button
+        >
 
         <el-table :data="records" style="width: 100%; margin-top: 10px" border>
           <el-table-column type="index" align="center" label="序号" width="80">
@@ -34,7 +40,7 @@
                 size="mini"
                 title="修改spu"
                 name="修改"
-                @click='updateSpu(row)'
+                @click="updateSpu(row)"
               ></hint-button>
               <hint-button
                 type="info"
@@ -43,13 +49,20 @@
                 title="查看当前spu全部sku列表"
                 name="详情"
               ></hint-button>
-              <hint-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                title="删除spu"
-                name="删除"
-              ></hint-button>
+              <!-- 气泡弹出框 -->
+              <el-popconfirm
+                :title="`确定删除${row.spuName}吗？`"
+                @onConfirm="deleteSpu(row)"
+              >
+                <hint-button
+                  slot="reference"
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  title="删除spu"
+                  name="删除"
+                ></hint-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -66,7 +79,9 @@
         >
         </el-pagination>
       </div>
-      <spu-form @changeScene='changeScene' v-show="scene == 1" ref='spu'>添加SPU|修改SPU</spu-form>
+      <spu-form @changeScene="changeScene" v-show="scene == 1" ref="spu"
+        >添加SPU|修改SPU</spu-form
+      >
       <sku-form v-show="scene == 2">添加SKU</sku-form>
     </el-card>
   </div>
@@ -74,8 +89,8 @@
 
 <script>
 //引入子组件
-import SkuForm from "./SkuForm"
-import SpuForm from "./SpuForm"
+import SkuForm from "./SkuForm";
+import SpuForm from "./SpuForm";
 
 export default {
   name: "Spu",
@@ -131,28 +146,40 @@ export default {
       this.getSpuList();
     },
     //添加spu按钮的回调
-    addSpu(){
-      this.scene=1;
+    addSpu() {
+      this.scene = 1;
       //通知子组件SpuForm发请求---两个
-      this.$refs.spu.addSpuData(this.category3Id)
+      this.$refs.spu.addSpuData(this.category3Id);
     },
     //修改某一个spu按钮的回调
-    updateSpu(row){
-      this.scene=1
+    updateSpu(row) {
+      this.scene = 1;
       //获取子组件spuForm  父访问子  去访问子的方法
-      this.$refs.spu.initSpudata(row)
-      
+      this.$refs.spu.initSpudata(row);
     },
-    //切换场景：自定义事件的回调：SpuForm 
-    changeScene(scene){
-      this.scene=scene
-      this.getSpuList()
-    }
+    //切换场景：自定义事件的回调：SpuForm
+    changeScene(scene) {
+      this.scene = scene;
+      this.getSpuList();
+    },
+    //删除某一个spu
+    async deleteSpu(row) {
+      let result = await this.$API.spu.reqDeleteSpu(row.id);
+      console.log(row)
+      if (result.code == 200) {
+        //提示
+        this.$message({ type: "success", message: "删除spu成功！" });
+        //重新获取列表
+        this.getSpuList();
+        //跳转页数
+        this.handleCurrentChange(this.records.length>1?this.page:this.page-1);
+      }
+    },
   },
-  components:{
+  components: {
     SpuForm,
-    SkuForm
-  }
+    SkuForm,
+  },
 };
 </script>
 
