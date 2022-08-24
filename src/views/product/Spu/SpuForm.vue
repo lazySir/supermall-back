@@ -123,7 +123,7 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
-      <el-button @click="$emit('changeScene', 0)">取消</el-button>
+      <el-button @click="cencel">取消</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -144,7 +144,7 @@ export default {
         //spu的名称
         spuName: "",
         //平台的id
-        tmId: 0,
+        tmId: "",
         //收集spu图片的信息
         spuImageList: [],
         //平台属性与属性值的收集
@@ -179,7 +179,7 @@ export default {
       //response：服务器返回的信息
       this.spuImageList = fileList;
     },
-    //初始化SpuForm数据
+    //初始化SpuForm数据----修改
     async initSpudata(row) {
       //获取spu信息的数据
       let spuResult = await this.$API.spu.reqSpu(row.id);
@@ -202,6 +202,21 @@ export default {
         });
         //把整理好的数据复制给
         this.spuImageList = listArr;
+      }
+      //获取平台全部的销售属性
+      let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+      if (saleResult.code == 200) {
+        this.saleAttrList = saleResult.data;
+      }
+    },
+    //初始化SpuForm数据---新增
+    async addSpuData(category3Id) {
+      //添加SPU的时候收集category3Id
+      this.spu.category3Id = category3Id;
+      //获取品牌的信息
+      let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+      if (tradeMarkResult.code == 200) {
+        this.tradeMarkList = tradeMarkResult.data;
       }
       //获取平台全部的销售属性
       let saleResult = await this.$API.spu.reqBaseSaleAttrList();
@@ -280,8 +295,22 @@ export default {
       if (result.code == 200) {
         this.$message({ type: "success", message: "保存成功" });
         //3.切换到展示列表数据
-        this.$emit('changeScene',0)
+        this.$emit("changeScene", 0);
       }
+      //4.清除数据
+      //object.assign：es6中新增的方法可以合并对象
+      //组件实例this._data 可以操作data当中的响应式的数据
+      //this.$options可以获取配置对象，配置对象的data函数执行那么返回的响应式就是空对象
+      Object.assign(this._data, this.$options.data());
+    },
+    //取消按钮的回调
+    cencel() {
+      this.$emit("changeScene", 0);
+      //清理数据  ---一行代码搞定  否则笨方法就是复制data张贴
+      //object.assign：es6中新增的方法可以合并对象
+      //组件实例this._data 可以操作data当中的响应式的数据
+      //this.$options可以获取配置对象，配置对象的data函数执行那么返回的响应式就是空对象
+      Object.assign(this._data, this.$options.data());
     },
   },
   computed: {

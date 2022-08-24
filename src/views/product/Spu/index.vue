@@ -133,6 +133,8 @@ export default {
     //添加spu按钮的回调
     addSpu(){
       this.scene=1;
+      //通知子组件SpuForm发请求---两个
+      this.$refs.spu.addSpuData(this.category3Id)
     },
     //修改某一个spu按钮的回调
     updateSpu(row){
