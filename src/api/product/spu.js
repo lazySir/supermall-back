@@ -97,3 +97,5 @@ export const reqDeleteSpu=(spuId)=>request({
   url:`/admin/product/deleteSpu/${spuId}`,
   method:'delete'
 })
+
+

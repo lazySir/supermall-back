@@ -83,7 +83,7 @@
       <spu-form @changeScene="changeScene" v-show="scene == 1" ref="spu"
         >添加SPU|修改SPU</spu-form
       >
-      <sku-form v-show="scene == 2">添加SKU</sku-form>
+      <sku-form ref='sku' v-show="scene == 2">添加SKU</sku-form>
     </el-card>
   </div>
 </template>
@@ -180,6 +180,8 @@ export default {
     addSku(row){
       //切换场景
       this.scene=2
+      //父组件调用子组件的方法---三个请求
+      this.$refs.sku.getData(this.category1Id,this.category2Id,row);
     }
   },
   components: {

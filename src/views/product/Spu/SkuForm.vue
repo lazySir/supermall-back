@@ -58,6 +58,43 @@
 <script>
 export default {
   name: "SkuForm",
+  data() {
+    return {
+      //存储图片的信息
+      spuImageList: [],
+      //存储销售属性
+      spuSaleAttrList: [],
+      //平台属性
+      attrInfoList: [],
+    };
+  },
+  methods: {
+    //获取skuForm数据
+    async getData(category1Id, category2Id, spu) {
+      //获取spu图片的数据
+      let result = await this.$API.sku.reqSpuImageList(spu.id);
+      if (result.code == 200) {
+        this.spuImageList = result.data;
+      }
+      //获取销售属性的数据
+      let result1 = await this.$API.sku.reqSpuSaleAttrList(spu.id);
+      if (result1.code == 200) {
+        this.spuSaleAttrList = result1.data;
+      }
+      // 获取平台属性的数据
+      let result2 = await this.$API.sku.reqAttrInfoList(
+        category1Id,
+        category2Id,
+        spu.category3Id
+      );
+      if (result2.code == 200) {
+        this.attrInfoList = result2.data;
+      }
+      console.log(result)
+      console.log(result1)
+      console.log(result2)
+    },
+  },
 };
 </script>
 
