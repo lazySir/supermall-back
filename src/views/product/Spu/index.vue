@@ -32,6 +32,7 @@
                 icon="el-icon-plus"
                 size="mini"
                 title="添加spu"
+                @click="addSku(row)"
                 name="添加"
               ></hint-button>
               <hint-button
@@ -175,6 +176,11 @@ export default {
         this.handleCurrentChange(this.records.length>1?this.page:this.page-1);
       }
     },
+    //添加一个sku
+    addSku(row){
+      //切换场景
+      this.scene=2
+    }
   },
   components: {
     SpuForm,
