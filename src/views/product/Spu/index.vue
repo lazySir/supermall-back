@@ -83,7 +83,9 @@
       <spu-form @changeScene="changeScene" v-show="scene == 1" ref="spu"
         >添加SPU|修改SPU</spu-form
       >
-      <sku-form ref='sku' v-show="scene == 2">添加SKU</sku-form>
+      <sku-form @changeScenes="changeScenes" ref="sku" v-show="scene == 2"
+        >添加SKU</sku-form
+      >
     </el-card>
   </div>
 </template>
@@ -166,23 +168,29 @@ export default {
     //删除某一个spu
     async deleteSpu(row) {
       let result = await this.$API.spu.reqDeleteSpu(row.id);
-      console.log(row)
+      console.log(row);
       if (result.code == 200) {
         //提示
         this.$message({ type: "success", message: "删除spu成功！" });
         //重新获取列表
         this.getSpuList();
         //跳转页数
-        this.handleCurrentChange(this.records.length>1?this.page:this.page-1);
+        this.handleCurrentChange(
+          this.records.length > 1 ? this.page : this.page - 1
+        );
       }
     },
     //添加一个sku
-    addSku(row){
+    addSku(row) {
       //切换场景
-      this.scene=2
+      this.scene = 2;
       //父组件调用子组件的方法---三个请求
-      this.$refs.sku.getData(this.category1Id,this.category2Id,row);
-    }
+      this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+    },
+    //sku通知父组件切换场景  skuForm
+    changeScenes(scene) {
+      this.scene = scene;
+    },
   },
   components: {
     SpuForm,
