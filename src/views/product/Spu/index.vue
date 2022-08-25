@@ -48,6 +48,7 @@
                 icon="el-icon-info"
                 size="mini"
                 title="查看当前spu全部sku列表"
+                @click="handler(row)"
                 name="详情"
               ></hint-button>
               <!-- 气泡弹出框 -->
@@ -87,6 +88,24 @@
         >添加SKU</sku-form
       >
     </el-card>
+    <el-dialog
+      :title="`${spu.spuName}的sku列表`"
+      :visible.sync="dialogTableVisible"
+    >
+      <el-table style="width: 100%" border :data="skuList">
+        <el-table-column width="width" prop="skuName" label="名称">
+        </el-table-column>
+        <el-table-column width="width" prop="price" label="价格">
+        </el-table-column>
+        <el-table-column width="width" prop="weight" label="重量">
+        </el-table-column>
+        <el-table-column width="width"  label="默认图片">
+          <template slot-scope="{row,$index}">
+            <img :src="row.skuDefaultImg" style='width:100px;height:100px' alt="">
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -102,12 +121,14 @@ export default {
       category1Id: "",
       category2Id: "",
       category3Id: "",
-
+      spu: {}, //存储被点击的spu详情
+      skuList: [], //存储被点击的spu的所有sku
       page: 1,
       limit: 3,
       records: [], //存储spu列表的数据
       total: 0,
       scene: 0, //0代表展示spu列表数据 1 添加SPU|修改SPU 2 添加SKU       //控制三级联动可操作性
+      dialogTableVisible: false, //控制对话框的显示与隐藏
     };
   },
   methods: {
@@ -190,6 +211,16 @@ export default {
     //sku通知父组件切换场景  skuForm
     changeScenes(scene) {
       this.scene = scene;
+    },
+    //查看sku按钮的回调
+    async handler(spu) {
+      this.dialogTableVisible = true;
+      this.spu = spu;
+      //获取sku列表的数据进行展示
+      let result = await this.$API.spu.reqSkuList(spu.id);
+      if (result.code == 200) {
+        this.skuList = result.data;
+      }
     },
   },
   components: {

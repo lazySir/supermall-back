@@ -113,6 +113,19 @@ export const reqAttrInfoList=(category1Id,category2Id,category3Id)=>request({
   method:'get'
 })
 
+
+
+//获取sku列表数据的接口
+// /admin/product/findBySpuId/{spuId}  get
+export const reqSkuList = (spuId)=>request({
+  url:`/admin/product/findBySpuId/${spuId}`,
+  method:'get'
+})
+
+
+
+
+
 //添加sku
 // /admin/product/saveSkuInfo post
 export const reqAddSku=(skuInfo)=>request({
