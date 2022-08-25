@@ -22,17 +22,30 @@
           />
         </template>
       </el-table-column>
-      <el-table-column width="80" prop="weight" label="重量"> </el-table-column>
-      <el-table-column width="80" prop="price" label="价格"> </el-table-column>
+      <el-table-column width="80" prop="weight" label="重量(kg)">
+      </el-table-column>
+      <el-table-column width="80" prop="price" label="价格(元)">
+      </el-table-column>
       <el-table-column width="width" prop="prop" label="操作">
         <template slot-scope="{ row, $index }">
+          <el-button
+            @click="sale(row)"
+            type="success"
+            title="上架"
+            icon="el-icon-top"
+            size="mini"
+            v-if="row.isSale == 0"
+          ></el-button>
           <el-button
             type="success"
             icon="el-icon-bottom"
             size="mini"
+            title="下架"
+            @click="cancel(row)"
+            v-else
           ></el-button>
-          <el-button type="success" icon="el-icon-top" size="mini"></el-button>
-          <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+
+          <el-button type="primary" @click='edit(row)' icon="el-icon-edit" size="mini"></el-button>
           <el-button type="info" icon="el-icon-info" size="mini"></el-button>
           <el-button
             type="danger"
@@ -89,6 +102,26 @@ export default {
       this.limit = limit;
       this.getSkuList();
     },
+    //上架
+    async sale(row) {
+      let result = await this.$API.sku.reqSale(row.id);
+      if (result.code == 200) {
+        row.isSale = 1;
+        this.$message({ type: "success", message: "上架成功！" });
+      }
+    },
+    //下架
+    async cancel(row) {
+      let result = await this.$API.sku.reqCancel(row.id);
+      if (result.code == 200) {
+        row.isSale = 0;
+        this.$message({ type: "success", message: "下架成功！" });
+      }
+    },
+    //edit
+    edit(row){
+      this.$message({type:'info',message:'正在开发中！'})
+    }
   },
   //组件挂载完毕
   mounted() {

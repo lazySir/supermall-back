@@ -6,3 +6,16 @@ export const reqSkuList = (page, limit) =>
     url: `/admin/product/list/${page}/${limit}`,
     method: "get",
   });
+
+//上架
+export const reqSale = (skuId) =>
+  request({
+    url: `/admin/product/onSale/${skuId}`,
+    method: "get",
+  });
+//下架
+export const reqCancel = (skuId) =>
+  request({
+    url: `/admin/product/cancelSale/${skuId}`,
+    method: "get",
+  });
