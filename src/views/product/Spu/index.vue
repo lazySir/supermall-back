@@ -91,17 +91,22 @@
     <el-dialog
       :title="`${spu.spuName}的sku列表`"
       :visible.sync="dialogTableVisible"
+      :befor-close='close'
     >
-      <el-table style="width: 100%" border :data="skuList">
+      <el-table style="width: 100%" v-loading='loading' border :data="skuList">
         <el-table-column width="width" prop="skuName" label="名称">
         </el-table-column>
         <el-table-column width="width" prop="price" label="价格">
         </el-table-column>
         <el-table-column width="width" prop="weight" label="重量">
         </el-table-column>
-        <el-table-column width="width"  label="默认图片">
-          <template slot-scope="{row,$index}">
-            <img :src="row.skuDefaultImg" style='width:100px;height:100px' alt="">
+        <el-table-column width="width" label="默认图片">
+          <template slot-scope="{ row, $index }">
+            <img
+              :src="row.skuDefaultImg"
+              style="width: 100px; height: 100px"
+              alt=""
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -123,6 +128,7 @@ export default {
       category3Id: "",
       spu: {}, //存储被点击的spu详情
       skuList: [], //存储被点击的spu的所有sku
+      loading:true,//详情页加载效果控制
       page: 1,
       limit: 3,
       records: [], //存储spu列表的数据
@@ -220,8 +226,16 @@ export default {
       let result = await this.$API.spu.reqSkuList(spu.id);
       if (result.code == 200) {
         this.skuList = result.data;
+        this.loading=false
       }
     },
+    //对话框关闭前的回调
+    close(){
+      //将loading属性变为true
+      this.loading=true
+      //清除sku数据
+      this.skuList=[]
+    }
   },
   components: {
     SpuForm,
