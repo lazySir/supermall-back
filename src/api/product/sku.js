@@ -19,3 +19,10 @@ export const reqCancel = (skuId) =>
     url: `/admin/product/cancelSale/${skuId}`,
     method: "get",
   });
+
+  //获取sku详情数据
+  // /admin/product/getSkuById/${skuId} get
+  export const reqSkuById = (skuId)=>request({
+    url:`/admin/product/getSkuById/${skuId}`,
+    method:'get'
+  })
