@@ -106,9 +106,9 @@
       <el-row>
         <el-col :span="5">商品图片</el-col>
         <el-col :span="16"
-          ><el-carousel height="150px">
+          ><el-carousel height="500px">
             <el-carousel-item v-for="item in skuInfo.skuImageList" :key="item.id">
-              <img :src="item.imgUrl" alt="">
+              <img style='width:100%' :src="item.imgUrl" alt="">
             </el-carousel-item>
           </el-carousel></el-col
         >
@@ -214,7 +214,8 @@ export default {
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
-.el-carousel__button{
+/* 深度选择器 */
+>>>.el-carousel__button{
   width:10px;
   height:10px;
   background:red;
