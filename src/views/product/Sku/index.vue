@@ -214,8 +214,10 @@ export default {
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
+
 /* 深度选择器 */
->>>.el-carousel__button{
+
+::v-deep .el-carousel__button{
   width:10px;
   height:10px;
   background:red;
