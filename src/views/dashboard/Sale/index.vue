@@ -208,7 +208,7 @@ export default {
   position: relative;
 }
 .date {
-  width: 250px;
+  width: 350px;
   margin: 0px 20px;
 }
 .right span {
