@@ -3,20 +3,22 @@
     <div slot="header" class="clearfix">
       <!-- 头部左侧内容 -->
       <el-tabs class="tab" v-model="activeName">
-        <el-tab-pane label="销售额" name="销售额"></el-tab-pane>
-        <el-tab-pane label="访问量" name="访问量"></el-tab-pane>
+        <el-tab-pane label="销售额" name="sale"></el-tab-pane>
+        <el-tab-pane label="访问量" name="visite"></el-tab-pane>
       </el-tabs>
       <!-- 头部右侧内容 -->
       <div class="right">
-        <span>今日</span>
-        <span>本周</span>
-        <span>本月</span>
-        <span>本年</span>
+        <span @click="setDay">今日</span>
+        <span @click="setWeek">本周</span>
+        <span @click="setMonth">本月</span>
+        <span @click="setYear">本年</span>
         <!-- v-model="value1" -->
         <el-date-picker
+          v-model="date"
+          value-format="yyyy-MM-dd"
           class="date"
           size="mini"
-          type="monthrange"
+          type="datetimerange"
           range-separator="-"
           start-placeholder="开始月份"
           end-placeholder="结束月份"
@@ -33,7 +35,7 @@
         </el-col>
         <!-- 内容右侧 -->
         <el-col :span="6" class="right">
-          <h3>门店销售额排名</h3>
+          <h3>门店{{ title }}排名</h3>
           <ul>
             <li>
               <span class="rindex">1</span>
@@ -61,12 +63,12 @@
               <span class="rvalue">212424</span>
             </li>
             <li class="lindex">
-              <span >6</span>
+              <span>6</span>
               <span>烤盘</span>
               <span class="rvalue">123456</span>
             </li>
             <li class="lindex">
-              <span >7</span>
+              <span>7</span>
               <span>必胜客</span>
               <span class="rvalue">99123</span>
             </li>
@@ -79,20 +81,23 @@
 
 <script>
 import * as echarts from "echarts";
-
+import dayjs from "dayjs";
 export default {
   name: "Sale",
   data() {
     return {
-      activeName: "销售额",
+      activeName: "sale",
+      mycharts: null,
+      //收集日历
+      date: [],
     };
   },
   mounted() {
-    let mycharts = echarts.init(this.$refs.charts);
+    this.mycharts = echarts.init(this.$refs.charts);
     //配置数据
-    mycharts.setOption({
+    this.mycharts.setOption({
       title: {
-        text: "销售额趋势",
+        text: this.title + "趋势",
       },
       xAxis: {
         type: "category",
@@ -139,6 +144,47 @@ export default {
       },
     });
   },
+  computed: {
+    title() {
+      //标题
+      return this.activeName == "sale" ? "销售额" : "访问量";
+    },
+  },
+  watch: {
+    title() {
+      //重新修改图表的配置数据
+      this.mycharts.setOption({
+        title: {
+          text: this.title + "趋势",
+        },
+      });
+    },
+  },
+  methods: {
+    //本日
+    setDay() {
+      const day = dayjs().format("YYYY-MM-DD");
+      this.date = [day, day];
+    },
+    //本周
+    setWeek() {
+      const start = dayjs().day(1).format("YYYY-MM-DD");
+      const end = dayjs().day(7).format("YYYY-MM-DD");
+      this.date = [start, end];
+    },
+    //本月
+    setMonth() {
+      const start = dayjs().startOf("month").format(" YYYY-MM-DD");
+      const end = dayjs().endOf("month").format("YYYY-MM-DD");
+      this.date = [start, end];
+    },
+    //本年
+    setYear() {
+      const start = dayjs().startOf("year").format(" YYYY-MM-DD");
+      const end = dayjs().endOf("year").format("YYYY-MM-DD");
+      this.date = [start, end];
+    },
+  },
 };
 </script>
 
@@ -162,7 +208,7 @@ export default {
   position: relative;
 }
 .date {
-  width: 200px;
+  width: 250px;
   margin: 0px 20px;
 }
 .right span {
