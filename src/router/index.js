@@ -35,15 +35,13 @@ export const constantRoutes = [
     path: "/login",
     component: () => import("@/views/login/index"),
     hidden: true,
-    meta:{title:"supermall后台管理系统"}
+    meta: { title: "supermall后台管理系统" },
   },
-
   {
     path: "/404",
     component: () => import("@/views/404"),
     hidden: true,
   },
-
   {
     path: "/",
     component: Layout,
@@ -54,6 +52,52 @@ export const constantRoutes = [
         name: "Dashboard",
         component: () => import("@/views/dashboard/index"),
         meta: { title: "首页", icon: "dashboard" },
+      },
+    ],
+  },
+  {
+    name: "Acl",
+    path: "/acl",
+    component: Layout,
+    redirect: "/acl/user/list",
+    meta: {
+      title: "权限管理",
+      icon: "el-icon-lock",
+    },
+    children: [
+      {
+        name: "User",
+        path: "user/list",
+        component: () => import("@/views/acl/user/list"),
+        meta: {
+          title: "用户管理",
+        },
+      },
+      {
+        name: "Role",
+        path: "role/list",
+        component: () => import("@/views/acl/role/list"),
+        meta: {
+          title: "角色管理",
+        },
+      },
+      {
+        name: "RoleAuth",
+        path: "role/auth/:id",
+        component: () => import("@/views/acl/role/roleAuth"),
+        meta: {
+          aciveMenu: "/acl/role/list",
+          title: "角色授权",
+        },
+        hidden: true,
+      },
+      {
+        name: "Permission",
+        path: "permission/list",
+        component: () => import("@/views/acl/permission/list"),
+        meta: {
+          title: "菜单管理",
+        },
       },
     ],
   },
@@ -101,8 +145,6 @@ export const constantRoutes = [
     ],
   },
 
-
-
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404", hidden: true },
 ];
@@ -116,7 +158,6 @@ const createRouter = () =>
 
 const router = createRouter();
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter();
   router.matcher = newRouter.matcher; // reset router
