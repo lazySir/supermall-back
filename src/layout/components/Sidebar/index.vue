@@ -31,7 +31,8 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      //sliderbar:需要便利的应该是仓库计算完毕的全部路由
+      return this.$store.state.user.resultAllroutes;
     },
     activeMenu() {
       const route = this.$route
