@@ -1,33 +1,6 @@
 <template>
   <div>
-    <!-- 
-      code: "Acl" // 标识名称
-      deleted: false
-      gmtCreate: "2020-11-30 16:40:08"
-      gmtModified: "2020-11-30 16:40:08"
-      id: "1333329957008228353"
-      level: 2
-      name: "权限管理"
-      pid: "1" // 所属节点的id
-      select: false
-      status: null
-      toCode: ""
-      type: 1  // 1: 路由 2: 按钮
 
-      children: []
-      code: "btn.Role.assgin"
-      deleted: false
-      gmtCreate: "2020-11-30 16:50:13"
-      gmtModified: "2020-12-01 08:13:47"
-      id: "1333332492158812161"
-      level: 4
-      name: "分配权限"
-      pid: "1333330152781561858"
-      select: false
-      status: null
-      toCode: "RoleAuth"
-      type: 2
-    -->
     <el-table
       border
       style="margin-bottom: 20px;"

@@ -149,6 +149,7 @@ export default {
         spuImageList: [],
         //平台属性与属性值的收集
         spuSaleAttrList: [],
+        spuSaleList:[]
       }, //存储SPU信息属性 ,初始化的时候是个空对象 在修改的时候会返回spu信息（对象），在修改的时候可以利用服务器返回的这个对象提交给服务器
       //但是在添加spu的时候，并没有像服务器发送请求，那么数据收集到哪【spu】，收集的时候
       tradeMarkList: [], //存储的是品牌的信息
